@@ -1,82 +1,111 @@
-# D.A.N.G.D.U.T. Flipper Zero Version
+# D.A.N.G.D.U.T.
 
-<img width="500" height="500" alt="ChatGPT_Image_Jun_30__2026__02_38_40_PM-removebg-preview" src="https://github.com/user-attachments/assets/0027e0fd-a976-4046-8d7a-f0572f8eb5f9" />
+**Deauthentication Attack Notification & Guard Detection Utility Toolkit**
+
+<img width="500" height="500" alt="dangdut logo" src="https://github.com/user-attachments/assets/36df0245-02f6-4f96-845a-4fe8d17338ac" />
 
 
-## Deauthentication Attack Notification & Guard Detection Utility Toolkit
 _Wireless Guardian in Your Pocket._
+
 _Author: XsanLahci_
 
 ## What this is
 
-This is a Flipper Zero application (.fap) that displays live deauth/disassoc
-attack detection status on the Flipper's own screen, by reading status lines
-sent over UART from a DANGDUT WiFi Devboard (ESP32-S2) sensor plugged into
-the Flipper's GPIO/devboard connector.
+D.A.N.G.D.U.T. is a passive Wireless Intrusion Detection System (WIDS) designed to detect Wi-Fi deauthentication and disassociation attacks in real-time. It operates entirely passively—it does not transmit, inject, or control the Wi-Fi radio, ensuring it remains a pure monitoring tool.
 
-This app is purely a passive display/monitor. It does not transmit, inject,
-or control the WiFi radio in any way, it only renders text data already
-produced by the sensor firmware (dangdut_esp32s2_flipper.ino).
+Originally designed as an external module for the **Flipper Zero**, the project has now evolved to support standalone hardware, bringing the WIDS experience to dedicated pocket-sized devices with their own screens and interfaces.
 
-## Folder structure
+### Supported Platforms:
 
+1.  **M5 Cardputer ADV Stamp S3a** (Standalone)
+    
+2.  **ESP32-S3 Mini OLED** (Standalone)
+    
+3.  **Flipper Zero** (via ESP32-S2 WiFi Devboard)
+    
+
+## 1. M5 Cardputer & ESP32-S3 Mini OLED (Standalone Versions)
+
+These versions are fully standalone and do not require a Flipper Zero to operate. They leverage the powerful ESP32-S3 chip to monitor attacks and render the UI directly on their built-in screens.
+
+### 🌟 Exclusive Features
+
+-   **Loading Boot:** Custom loading boot sequence for a smoother and visually appealing startup experience.
+    
+-   **Interactive Control (Cardputer):** Seamlessly start and stop the monitoring of Wi-Fi deauth attacks directly using the Cardputer's keyboard/interface.
+    
+-   **About the Author:** A dedicated section to view project and author information.
+    
+-   **Live Display:** Real-time attack alerts showing target MAC, sender MAC, and RSSI directly on the OLED/Cardputer screen.
+    
+
+### 🛠️ Installation
+
+1.  Download the pre-compiled firmware for your specific device from the Releases/Assets section (e.g., `dangdut_esp32s3_cardputer.bin`).
+    
+2.  Connect your M5 Cardputer or ESP32-S3 Mini OLED to your computer via USB.
+    
+3.  Open the [**Dangdut Web Flasher**](https://dangdut-web-flasher.vercel.app/ "null") in your Chrome or Edge browser to flash the `.bin` file easily. _(Alternatively, you can use your preferred ESP32 flasher tool like `esptool.py` or M5Burner)._
+    
+4.  Reboot the device. You will see the new loading screen and can begin monitoring immediately.
+    
+
+## 2. Flipper Zero Version (.fap)
+
+This version operates as a Flipper Zero application (`.fap`) that displays live attack detection status on the Flipper's screen by reading UART status lines sent from a connected DANGDUT WiFi Devboard (ESP32-S2).
+
+### Folder Structure
+
+```
 dangdut_flipper_app/
-  application.fam     - app manifest (name, entry point, category)
+  application.fam      - app manifest (name, entry point, category)
   dangdut_app.c        - main app source (UART read + screen rendering)
   images/              - icon assets folder (add dangdut.png, 10x10 px, 1-bit)
   README.md            - this file
 
-## Requirements
 
-- Flipper Zero with official firmware (or compatible custom firmware
-  that supports FAP external apps and furi_hal_serial)
-- ufbt (micro Flipper Build Tool) installed on your computer
-  Install: pip install ufbt
-- DANGDUT WiFi Devboard (ESP32-S2) flashed with dangdut_esp32s2_flipper.ino,
-  which sends status lines over Serial1 (GPIO17/18) toward the Flipper.
+```
 
-## Build & install steps
+### Requirements
 
-1. Place this folder anywhere on your computer, e.g.:
-     ~/flipper-apps/dangdut_flipper_app/
+-   Flipper Zero with official firmware (or compatible custom firmware supporting FAP external apps and `furi_hal_serial`).
+    
+-   `ufbt` (micro Flipper Build Tool) installed on your computer (`pip install ufbt`).
+    
+-   DANGDUT WiFi Devboard (ESP32-S2) flashed with `dangdut_esp32s2_flipper.ino`.
+    
 
-2. Open a terminal inside this folder and run:
-     ufbt
+### Build & Install Steps
 
-   This compiles dangdut_app.c into a .fap file under the dist/ folder.
+1.  Place this folder anywhere on your computer (e.g., `~/flipper-apps/dangdut_flipper_app/`).
+    
+2.  Open a terminal inside this folder and run: `ufbt`. This compiles `dangdut_app.c` into a `.fap` file under the `dist/` folder.
+    
+3.  Connect your Flipper Zero via USB, then run: `ufbt launch`. This installs and launches the app directly. _(Alternatively, copy the `.fap` to `SD Card / apps / Tools /` using qFlipper)._
+    
+4.  Plug in the flashed DANGDUT WiFi Devboard (ESP32-S2) into the Flipper Zero's GPIO header.
+    
+5.  Launch the app. You should see:
+    
+    -   `"Waiting for devboard..."` until the first UART line arrives.
+        
+    -   `"SYSTEM SECURE"` in normal state.
+        
+    -   `"ATTACK DETECTED"` (blinking red banner + red LED, plus MAC/RSSI info) during an attack.
+        
 
-3. Connect your Flipper Zero via USB, then run:
-     ufbt launch
+### Controls
 
-   This installs the .fap onto the Flipper and launches it directly, or you
-   can manually copy the generated .fap file (from dist/) to:
-     SD Card / apps / Tools / dangdut_app.fap
-   using qFlipper's file manager, then launch it from
-   Flipper Zero menu > Apps > Tools > D.A.N.G.D.U.T.
+-   **BACK button** -> exit the app and return to the Flipper menu.
+    
 
-4. Plug in the DANGDUT WiFi Devboard (ESP32-S2 flashed with the companion
-   .ino sketch) into the Flipper Zero's GPIO header, matching the standard
-   WiFi Devboard pin orientation.
+### Protocol Reference (ESP32-S2 to Flipper UART)
 
-5. Launch the app on the Flipper. You should see:
-     "Waiting for devboard..."   until the first UART line arrives, then:
-     "SYSTEM SECURE"             in normal state, or
-     "ATTACK DETECTED"           blinking red banner + red LED blink,
-                                  plus target/sender MAC and RSSI info
+Must match the ESP32-S2 firmware output. Lines are newline-terminated, sent once per second at 115200 baud.
 
-## Icon (optional)
+-   `SAFE|<total_packets>|<packets_per_sec>|<channel>`
+    
+-   `ATTACK|<total_packets>|<packets_per_sec>|<channel>|<target_mac>|<sender_mac>|<rssi>`
+    
 
-Flipper app icons are 10x10 px, 1-bit XBM-style PNGs. If you skip creating
-images/dangdut.png, ufbt will use a placeholder icon, the app will still
-build and run fine without a custom icon.
-
-## Controls
-
-  BACK button -> exit the app and return to the Flipper menu
-
-## Protocol reference (must match the ESP32-S2 firmware)
-
-  SAFE|<total_packets>|<packets_per_sec>|<channel>
-  ATTACK|<total_packets>|<packets_per_sec>|<channel>|<target_mac>|<sender_mac>|<rssi>
-
-Lines are newline-terminated, sent once per second at 115200 baud.
+_Happy Scanning!_
